@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cats vs Dogs Classifier</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            --accent-color: #ff6b6b;
+            --accent-gradient: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            --text-main: #ffffff;
+            --text-muted: #cbd5e1;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #0f172a;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-main);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated Background Blobs */
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            animation: float 10s infinite ease-in-out;
+        }
+        .blob-1 {
+            top: 10%;
+            left: 20%;
+            width: 300px;
+            height: 300px;
+            background: #4f46e5;
+        }
+        .blob-2 {
+            bottom: 15%;
+            right: 20%;
+            width: 350px;
+            height: 350px;
+            background: #db2777;
+            animation-delay: -2s;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0); }
+            50% { transform: translate(20px, 40px); }
+            100% { transform: translate(0, 0); }
+        }
+
+        /* Glass Container */
+        .container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+            padding: 50px 40px;
+            width: 90%;
+            max-width: 480px;
+            border-radius: 30px;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        h2 {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            background: linear-gradient(to right, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 16px;
+            margin-bottom: 35px;
+            font-weight: 300;
+        }
+
+        /* Upload Area */
+        .upload-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 40px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .upload-box:hover {
+            border-color: var(--accent-color);
+            background: rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .upload-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+            opacity: 0.8;
+            transition: 0.3s;
+        }
+
+        .upload-text {
+            font-size: 15px;
+            color: var(--text-muted);
+        }
+        
+        .upload-text span {
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        /* Image Preview */
+        .preview {
+            margin-top: 25px;
+            border-radius: 16px;
+            overflow: hidden;
+            display: none; /* Hidden by default until JS triggers it */
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+
+        .preview img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Action Button */
+        button {
+            margin-top: 30px;
+            width: 100%;
+            padding: 18px;
+            font-size: 16px;
+            border: none;
+            border-radius: 50px;
+            background: var(--accent-gradient);
+            color: white;
+            cursor: pointer;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
+        }
+
+        /* Result Box */
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            border-radius: 16px;
+            font-size: 20px;
+            font-weight: 600;
+            color: #34d399;
+            text-shadow: 0 0 10px rgba(52, 211, 153, 0.3);
+            animation: slideUp 0.4s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Navigation */
+        .nav-link {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 12px 25px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            border-radius: 20px;
+            transition: 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .nav-link:hover {
+            color: white;
+            background: rgba(255,255,255,0.05);
+            border-color: rgba(255,255,255,0.1);
+        }
+
+        footer {
+            margin-top: 30px;
+            font-size: 11px;
+            color: rgba(255,255,255,0.3);
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+
+<div class="container">
+    <h2>Cats vs Dogs</h2>
+    <p class="subtitle">Upload an image to detect the animal</p>
+
+    <form method="POST" enctype="multipart/form-data">
+        <label class="upload-box">
+            <input type="file" name="image" accept="image/*" onchange="previewImage(event)" required>
+            <div class="upload-icon">📁</div>
+            <div class="upload-text"><span>Click to Upload</span> or drop image</div>
+        </label>
+
+        <div class="preview" id="previewContainer">
+            <img id="imagePreview" alt="Image Preview">
+        </div>
+
+        <button type="submit">Analyze Image</button>
+    </form>
+
+    {% if result %}
+        <div class="result">
+            This looks like a {{ result }}
+        </div>
+    {% endif %}
+
+    <a href="/stock" class="nav-link">
+        View Stock Predictions &rarr;
+    </a>
+
+    <footer>
+        Powered by Neural Networks & Flask
+    </footer>
+</div>
+
+<script>
+    function previewImage(event) {
+        const img = document.getElementById('imagePreview');
+        const container = document.getElementById('previewContainer');
+        const file = event.target.files[0];
+        
+        if (file) {
+            img.src = URL.createObjectURL(file);
+            container.style.display = 'block';
+            // Smooth scroll to button
+            setTimeout(() => {
+                document.querySelector('button').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+        }
+    }
+</script>
+
+</body>
+</html>
